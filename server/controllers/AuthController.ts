@@ -3,11 +3,7 @@ import { NextFunction, Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
-export const checkUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const checkUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;
 
@@ -28,6 +24,27 @@ export const checkUser = async (
     } else {
       return res.json({ msg: "User found", status: true, data: user });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const onboardUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, name, about, image: profilePictureUrl } = req.body;
+    if (!email || !name || !profilePictureUrl) {
+      return res.send("Please fill all fields");
+    }
+
+    await prisma.user.create({
+      data: {
+        email,
+        name,
+        about,
+        profilePictureUrl,
+      },
+    });
+    return res.json({ msg: "User onboarded successfully", status: true });
   } catch (error) {
     next(error);
   }

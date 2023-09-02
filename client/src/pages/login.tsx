@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
@@ -12,7 +12,14 @@ import { reducerCases } from "@/context/constants";
 const login = () => {
   const router = useRouter();
 
-  const [{}, dispatch] = useStateProvider() as any[]; // dispatch is a function that allows us to update the state
+  const [{ userInfo, newUser }, dispatch] = useStateProvider() as any[]; // dispatch is a function that allows us to update the state
+
+  // to fix the bug of the user being able to go back to the login page after logging in
+  useEffect(() => {
+    if (userInfo?.email && !newUser) {
+      router.push("/");
+    }
+  }, [userInfo, newUser, router]);
 
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
@@ -29,6 +36,7 @@ const login = () => {
           dispatch({
             type: reducerCases.SET_USER_INFO,
             userInfo: {
+              id: data.id,
               name,
               email,
               profileImage,
@@ -36,6 +44,25 @@ const login = () => {
             },
           });
           router.push("/onboarding");
+        } else {
+          const {
+            id,
+            name,
+            email,
+            profilePictureUrl: profileImage,
+            status,
+          } = data;
+          dispatch({
+            type: reducerCases.SET_USER_INFO,
+            userInfo: {
+              id: data.data.id,
+              name: data.data.name,
+              email: data.data.email,
+              profileImage,
+              status: "",
+            },
+          });
+          router.push("/");
         }
       }
     } catch (error) {

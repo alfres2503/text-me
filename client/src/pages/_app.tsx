@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }) {
         <title>TextMe</title>
         <link rel="shortcut icon" href="/logo.svg" />
       </Head>
-      <Component {...pageProps} />;
+      <Component {...pageProps} />
     </StateProvider>
   );
 }
