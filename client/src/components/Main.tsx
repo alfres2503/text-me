@@ -14,7 +14,7 @@ const Main = () => {
   const router = useRouter();
   const [redirectLogin, setRedirectLogin] = useState<boolean>(false);
 
-  const [{ userInfo }, dispatch] = useStateProvider() as any;
+  const [{ userInfo, currentChatUser }, dispatch] = useStateProvider() as any;
 
   useEffect(() => {
     if (redirectLogin) router.push("/login");
@@ -58,8 +58,7 @@ const Main = () => {
   return (
     <>
       <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
-        {/* <Empty></Empty> */}
-        <Chat></Chat>
+        {currentChatUser ? <Chat /> : <Empty></Empty>}
         <ChatList></ChatList>
       </div>
     </>
