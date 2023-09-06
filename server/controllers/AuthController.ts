@@ -36,7 +36,7 @@ export const onboardUser = async (req: Request, res: Response, next: NextFunctio
       return res.send("Please fill all fields");
     }
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
         name,
@@ -44,7 +44,37 @@ export const onboardUser = async (req: Request, res: Response, next: NextFunctio
         profilePictureUrl,
       },
     });
-    return res.json({ msg: "User onboarded successfully", status: true });
+    return res.json({ msg: "User onboarded successfully", status: true, user: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const users = await prisma.user.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        profilePictureUrl: true,
+        about: true,
+      },
+    });
+
+    const usersGroupedByInitialLetter = {};
+    users.forEach((user) => {
+      const initialLetter: any = user.name.charAt(0).toUpperCase();
+
+      if (!usersGroupedByInitialLetter[initialLetter]) {
+        usersGroupedByInitialLetter[initialLetter] = [];
+      }
+
+      usersGroupedByInitialLetter[initialLetter].push(user);
+    });
+
+    return res.status(200).send({ users: usersGroupedByInitialLetter });
   } catch (error) {
     next(error);
   }

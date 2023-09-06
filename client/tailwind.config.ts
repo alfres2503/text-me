@@ -19,6 +19,9 @@ const config: Config = {
         whiteGlass_md: "rgba(255, 255, 255, 0.5)",
         whiteGlass_lg: "rgba(255, 255, 255, 0.75)",
       },
+      gridTemplateColumns: {
+        main: "2.4fr 1fr",
+      },
     },
   },
   plugins: [],
