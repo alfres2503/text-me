@@ -4,7 +4,7 @@ import ChatList from "./ChatList/ChatList";
 import { onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "@/utils/FirebaseConfig";
 import axios from "axios";
-import { CHECK_USER_ROUTE } from "@/utils/ApiRoutes";
+import { CHECK_USER_ROUTE, GET_MESSAGES_ROUTE } from "@/utils/ApiRoutes";
 import { useRouter } from "next/router";
 import { reducerCases } from "@/context/constants";
 import { useStateProvider } from "@/context/StateContext";
@@ -54,6 +54,21 @@ const Main = () => {
       }
     }
   });
+
+  useEffect(() => {
+    const getMessages = async () => {
+      const {
+        data: { messages },
+      } = await axios.get(
+        `${GET_MESSAGES_ROUTE}/${userInfo?.id}/${currentChatUser?.id}`
+      );
+      dispatch({ type: reducerCases.SET_MESSAGES, messages });
+    };
+
+    if (currentChatUser?.id && userInfo?.id) {
+      getMessages();
+    }
+  }, [currentChatUser]);
 
   return (
     <>
