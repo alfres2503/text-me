@@ -1,20 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Empty from "./Empty";
 import ChatList from "./ChatList/ChatList";
 import { onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "@/utils/FirebaseConfig";
 import axios from "axios";
-import { CHECK_USER_ROUTE, GET_MESSAGES_ROUTE } from "@/utils/ApiRoutes";
+import { CHECK_USER_ROUTE, GET_MESSAGES_ROUTE, HOST } from "@/utils/ApiRoutes";
 import { useRouter } from "next/router";
 import { reducerCases } from "@/context/constants";
 import { useStateProvider } from "@/context/StateContext";
 import Chat from "./Chat/Chat";
+import { io } from "socket.io-client";
 
 const Main = () => {
   const router = useRouter();
   const [redirectLogin, setRedirectLogin] = useState<boolean>(false);
 
   const [{ userInfo, currentChatUser }, dispatch] = useStateProvider() as any;
+
+  const [socketEvent, setSocketEvent] = useState(false);
+
+  const socket = useRef<any>(null);
 
   useEffect(() => {
     if (redirectLogin) router.push("/login");
@@ -54,6 +59,28 @@ const Main = () => {
       }
     }
   });
+
+  useEffect(() => {
+    if (userInfo) {
+      socket.current = io(HOST);
+      socket.current.emit("add-user", userInfo.id);
+      dispatch({ type: reducerCases.SET_SOCKET, socket });
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
+    if (socket.current && !socketEvent) {
+      socket.current.on("msg-receive", (data: any) => {
+        dispatch({
+          type: reducerCases.ADD_MESSAGE,
+          newMessage: {
+            ...data.message,
+          },
+        });
+      });
+      setSocketEvent(true);
+    }
+  }, [socket.current]);
 
   useEffect(() => {
     const getMessages = async () => {
