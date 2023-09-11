@@ -12,6 +12,8 @@ dotEnv.config();
 app.use(cors());
 app.use(express.json());
 
+app.use("/uploads/images/", express.static("uploads/images"));
+
 app.use("/api/auth", AuthRouter);
 app.use("/api/message", MessageRouter);
 

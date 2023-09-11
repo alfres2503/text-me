@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
+import { renameSync } from "fs";
 
 const prisma = new PrismaClient();
 
@@ -70,6 +71,35 @@ export const getMessages = async (req: Request, res: Response, next: NextFunctio
     });
 
     return res.status(200).send({ messages });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addImageMessage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (req.file) {
+      const date = Date.now();
+      let filename = "uploads/images/" + date + req.file.originalname;
+      renameSync(req.file.path, filename);
+      const { from, to } = req.query;
+
+      if (from && to) {
+        if (typeof from === "string" && typeof to === "string") {
+          const message = await prisma.message.create({
+            data: {
+              message: filename,
+              type: "image",
+              sender: { connect: { id: parseInt(from) } },
+              receiver: { connect: { id: parseInt(to) } },
+            },
+          });
+          return res.status(201).json({ message });
+        }
+      }
+      return res.status(400).send("From and To are required");
+    }
+    return res.status(400).send("Image is required");
   } catch (error) {
     next(error);
   }
