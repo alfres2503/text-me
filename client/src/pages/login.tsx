@@ -88,7 +88,7 @@ const login = () => {
             >
               <FcGoogle className="text-2xl" />
               <span className="text-white text-2xl font-thin">
-                Sing in with Google
+                Sign in with Google
               </span>
             </button>
           </div>

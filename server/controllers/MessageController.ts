@@ -4,7 +4,11 @@ import { renameSync } from "fs";
 
 const prisma = new PrismaClient();
 
-export const addMessage = async (req: Request, res: Response, next: NextFunction) => {
+export const addMessage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { message, from, to } = req.body;
     const getUser = global.onlineUsers.get(to);
@@ -30,7 +34,11 @@ export const addMessage = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const getMessages = async (req: Request, res: Response, next: NextFunction) => {
+export const getMessages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { from, to } = req.params;
 
@@ -55,7 +63,10 @@ export const getMessages = async (req: Request, res: Response, next: NextFunctio
     const unreadMessages = [];
 
     messages.forEach((message, index) => {
-      if (message.messageStatus !== "read" && message.senderId === parseInt(to)) {
+      if (
+        message.messageStatus !== "read" &&
+        message.senderId === parseInt(to)
+      ) {
         messages[index].messageStatus = "read";
         unreadMessages.push(message.id);
       }
@@ -76,7 +87,11 @@ export const getMessages = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const addImageMessage = async (req: Request, res: Response, next: NextFunction) => {
+export const addImageMessage = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (req.file) {
       const date = Date.now();

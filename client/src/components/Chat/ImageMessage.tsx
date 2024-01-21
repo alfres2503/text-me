@@ -27,6 +27,9 @@ const ImageMessage = ({ message }) => {
               <MessageStatus messageStatus={message.messageStatus} />
             )}
           </span>
+          <span className="text-zinc-300 text-xs">
+            {new Date(message.createdAt).toLocaleTimeString()}
+          </span>
         </div>
       </div>
     </div>

@@ -16,13 +16,17 @@ const ChatContainer = () => {
               <div
                 key={message.id}
                 className={`flex ${
-                  message.senderId === currentChatUser.id ? "justify-start" : "justify-end"
+                  message.senderId === currentChatUser.id
+                    ? "justify-start"
+                    : "justify-end"
                 }`}
               >
                 {message.type === "text" && (
                   <div
                     className={`text-white py-2 px-3 text-md rounded-2xl flex gap-2 items-end max-w-[45%] ${
-                      message.senderId === currentChatUser.id ? "bg-zinc-700" : "bg-blue-700"
+                      message.senderId === currentChatUser.id
+                        ? "bg-zinc-700"
+                        : "bg-blue-700"
                     }`}
                   >
                     <span className="break-all">{message.message}</span>
@@ -32,8 +36,13 @@ const ChatContainer = () => {
                       </span> */}
                       <span>
                         {message.senderId === userInfo.id && (
-                          <MessageStatus messageStatus={message.messageStatus} />
+                          <MessageStatus
+                            messageStatus={message.messageStatus}
+                          />
                         )}
+                      </span>
+                      <span className="text-zinc-300 text-xs">
+                        {new Date(message.createdAt).toLocaleTimeString()}
                       </span>
                     </div>
                   </div>
