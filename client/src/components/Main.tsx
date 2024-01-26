@@ -10,15 +10,15 @@ import { reducerCases } from "@/context/constants";
 import { useStateProvider } from "@/context/StateContext";
 import Chat from "./Chat/Chat";
 import { io } from "socket.io-client";
+import SearchMessages from "./Chat/SearchMessages";
 
 const Main = () => {
   const router = useRouter();
+
   const [redirectLogin, setRedirectLogin] = useState<boolean>(false);
-
-  const [{ userInfo, currentChatUser }, dispatch] = useStateProvider() as any;
-
+  const [{ userInfo, currentChatUser, messagesSearch }, dispatch] =
+    useStateProvider() as any;
   const [socketEvent, setSocketEvent] = useState(false);
-
   const socket = useRef<any>(null);
 
   useEffect(() => {
@@ -100,7 +100,14 @@ const Main = () => {
   return (
     <>
       <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
-        {currentChatUser ? <Chat /> : <Empty></Empty>}
+        {currentChatUser ? (
+          <div className={messagesSearch ? "grid grid-cols-2" : "grid-cols-2"}>
+            {messagesSearch && <SearchMessages />}
+            <Chat />
+          </div>
+        ) : (
+          <Empty></Empty>
+        )}
         <ChatList></ChatList>
       </div>
     </>
