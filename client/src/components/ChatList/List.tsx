@@ -6,7 +6,8 @@ import React, { useEffect } from "react";
 import ChatListItem from "./ChatListItem";
 
 const List = () => {
-  const [{ userInfo, userContacts }, dispatch] = useStateProvider() as any;
+  const [{ userInfo, userContacts, filteredContacts }, dispatch] =
+    useStateProvider() as any;
 
   useEffect(() => {
     const getContacts = async () => {
@@ -28,9 +29,14 @@ const List = () => {
 
   return (
     <div className="bg-zinc-950  flex-auto overflow-auto max-h-full custom-scrollbar">
-      {userContacts?.map((contact) => (
-        <ChatListItem key={contact.id} data={contact} />
-      ))}
+      {filteredContacts && filteredContacts.length > 0
+        ? filteredContacts?.map((contact) => (
+            <ChatListItem key={contact.id} data={contact} />
+          ))
+        : userContacts?.map((contact) => (
+            <ChatListItem key={contact.id} data={contact} />
+          ))}
+      {}
     </div>
   );
 };
