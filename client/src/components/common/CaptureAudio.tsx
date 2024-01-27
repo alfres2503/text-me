@@ -174,6 +174,8 @@ const CaptureAudio = ({ hide }) => {
           fromSelf: true,
         });
       }
+
+      hide();
     } catch (error) {
       console.log(error);
     }

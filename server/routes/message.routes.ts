@@ -3,6 +3,7 @@ import {
   addAudioMessage,
   addImageMessage,
   addMessage,
+  getInitialContactsWithMessages,
   getMessages,
 } from "../controllers/MessageController";
 import multer from "multer";
@@ -23,6 +24,10 @@ MessageRouter.post(
   "/add-audio-message",
   uploadAudio.single("audio"),
   addAudioMessage
+);
+MessageRouter.get(
+  "/get-initial-contacts/:from",
+  getInitialContactsWithMessages
 );
 
 export default MessageRouter;

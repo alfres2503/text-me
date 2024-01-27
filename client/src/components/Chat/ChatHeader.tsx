@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Avatar from "../common/Avatar";
 import { MdCall } from "react-icons/md";
 import { IoVideocam } from "react-icons/io5";
@@ -9,6 +9,11 @@ import { reducerCases } from "@/context/constants";
 
 const ChatHeader = () => {
   const [{ currentChatUser }, dispatch] = useStateProvider() as any;
+
+  useEffect(() => {
+    console.log(currentChatUser);
+  }, []);
+
   return (
     <div className="h-16 px-4 py-3 flex  justify-between items-center bg-zinc-950 z-10">
       <div className="flex items-center justify-center gap-6">

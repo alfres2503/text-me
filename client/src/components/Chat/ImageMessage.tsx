@@ -22,13 +22,13 @@ const ImageMessage = ({ message }) => {
           height={300}
         />
         <div className="absolute bottom-1 right-1 flex items-end gap-1">
+          <span className="text-zinc-300 text-xs">
+            {new Date(message.createdAt).toLocaleTimeString()}
+          </span>
           <span className="text-zinc-300">
             {message.senderId === userInfo.id && (
               <MessageStatus messageStatus={message.messageStatus} />
             )}
-          </span>
-          <span className="text-zinc-300 text-xs">
-            {new Date(message.createdAt).toLocaleTimeString()}
           </span>
         </div>
       </div>

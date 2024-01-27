@@ -152,3 +152,115 @@ export const addAudioMessage = async (
     next(error);
   }
 };
+
+export const getInitialContactsWithMessages = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userID = parseInt(req.params.from);
+
+    const user = await prisma.user.findUnique({
+      where: { id: userID },
+      include: {
+        sentMessages: {
+          include: {
+            receiver: true,
+            sender: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+        receivedMessages: {
+          include: {
+            receiver: true,
+            sender: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    const messages = [...user.sentMessages, ...user.receivedMessages];
+
+    //sort messages
+    messages.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    const users = new Map();
+    const messageStatusChange = [];
+
+    messages.forEach((msg) => {
+      const isSender = msg.senderId === userID;
+      const calculatedId = isSender ? msg.receiverId : msg.senderId;
+
+      if (msg.messageStatus === "sent") messageStatusChange.push(msg.id);
+
+      if (!users.has(calculatedId)) {
+        const {
+          id,
+          type,
+          message,
+          messageStatus,
+          createdAt,
+          senderId,
+          receiverId,
+        } = msg;
+
+        let user = {
+          messageId: id,
+          type,
+          message,
+          messageStatus,
+          createdAt,
+          senderId,
+          receiverId,
+          totalUnreadMessages: 0,
+        };
+
+        if (isSender) {
+          user = {
+            ...user,
+            ...msg.receiver,
+            totalUnreadMessages: 0,
+          };
+        } else {
+          user = {
+            ...user,
+            ...msg.sender,
+            totalUnreadMessages: messageStatus !== "read" ? 1 : 0,
+          };
+        }
+        users.set(calculatedId, { ...user, totalUnreadMessages: 0 });
+      } else if (msg.messageStatus !== "read" && !isSender) {
+        const user = users.get(calculatedId);
+        users.set(calculatedId, {
+          ...user,
+          totalUnreadMessages: user.totalUnreadMessages + 1,
+        });
+      }
+    });
+
+    if (messageStatusChange.length) {
+      await prisma.message.updateMany({
+        where: {
+          id: { in: messageStatusChange },
+        },
+        data: {
+          messageStatus: "delivered",
+        },
+      });
+    }
+    console.log("getInitialContactsWithMessages");
+    console.log(Array.from(users.values()));
+    console.log(Array.from(global.onlineUsers.keys()));
+
+    return res.status(200).json({
+      users: Array.from(users.values()),
+      onlineUsers: Array.from(global.onlineUsers.keys()),
+    });
+  } catch (error) {}
+};

@@ -10,8 +10,15 @@ const MessageStatus = ({ messageStatus }) => {
   return (
     <>
       {messageStatus === "sent" && <BsCheck className="text-xl " />}
-      {messageStatus === "delivered" && <BsCheck2Circle className="text-xl " />}
-      {messageStatus === "read" && <BsCheck2All className="text-xl  " />}
+      {messageStatus === "delivered" && <BsCheckAll className="text-xl " />}
+      {messageStatus === "read" && (
+        <BsCheckAll className="text-xl text-green-500  " />
+      )}
+      {/* {messageStatus === "sent" && <span className="text-xs ">sent</span>}
+      {messageStatus === "delivered" && (
+        <span className="text-xs ">delivered</span>
+      )}
+      {messageStatus === "read" && <span className="text-xs  ">read</span>} */}
     </>
   );
 };

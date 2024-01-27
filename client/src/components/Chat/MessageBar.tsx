@@ -147,6 +147,9 @@ const MessageBar = () => {
               className="bg-zinc-950 border border-zinc-600 text-sm focus:outline-none text-white h-10 rounded-full px-5 py-4 w-full"
               onChange={(e) => setMessage(e.target.value)}
               value={message}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") sendMessage();
+              }}
             />
           </div>
           <div className="flex w-10 items-center justify-center">
