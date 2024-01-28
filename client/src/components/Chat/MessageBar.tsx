@@ -1,6 +1,10 @@
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
-import { ADD_IMAGE_MESSAGE_ROUTE, ADD_MESSAGE_ROUTE } from "@/utils/ApiRoutes";
+import {
+  ADD_IMAGE_MESSAGE_ROUTE,
+  ADD_MESSAGE_ROUTE,
+  GET_INITIAL_CONTACTS_ROUTE,
+} from "@/utils/ApiRoutes";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { BsEmojiSmile } from "react-icons/bs";
@@ -106,6 +110,12 @@ const MessageBar = () => {
         newMessage: { ...data.message },
         fromSelf: true,
       });
+
+      const {
+        data: { users },
+      } = await axios(`${GET_INITIAL_CONTACTS_ROUTE}/${userInfo.id}`);
+
+      dispatch({ type: reducerCases.SET_USER_CONTACTS, users });
       setMessage("");
     } catch (error) {
       console.log(error);

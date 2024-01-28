@@ -4,7 +4,12 @@ import ChatList from "./ChatList/ChatList";
 import { onAuthStateChanged } from "firebase/auth";
 import { firebaseAuth } from "@/utils/FirebaseConfig";
 import axios from "axios";
-import { CHECK_USER_ROUTE, GET_MESSAGES_ROUTE, HOST } from "@/utils/ApiRoutes";
+import {
+  CHECK_USER_ROUTE,
+  GET_INITIAL_CONTACTS_ROUTE,
+  GET_MESSAGES_ROUTE,
+  HOST,
+} from "@/utils/ApiRoutes";
 import { useRouter } from "next/router";
 import { reducerCases } from "@/context/constants";
 import { useStateProvider } from "@/context/StateContext";
@@ -69,6 +74,14 @@ const Main = () => {
   }, [userInfo]);
 
   useEffect(() => {
+    const updateContacts = async () => {
+      const {
+        data: { users },
+      } = await axios(`${GET_INITIAL_CONTACTS_ROUTE}/${userInfo.id}`);
+
+      dispatch({ type: reducerCases.SET_USER_CONTACTS, users });
+    };
+
     if (socket.current && !socketEvent) {
       socket.current.on("msg-receive", (data: any) => {
         dispatch({
@@ -77,6 +90,9 @@ const Main = () => {
             ...data.message,
           },
         });
+
+        updateContacts();
+        console.log("mensaje recibido");
       });
       setSocketEvent(true);
     }
