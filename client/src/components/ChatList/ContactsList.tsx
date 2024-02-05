@@ -8,7 +8,24 @@ import ChatListItem from "./ChatListItem";
 
 const ContactsList = () => {
   const [allContacts, setAllContacts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchContacts, setSearchContacts] = useState([]);
+
   const [{}, dispatch] = useStateProvider() as any;
+
+  useEffect(() => {
+    if (searchTerm.length) {
+      const filteredData: any = {};
+      Object.keys(allContacts).forEach((key) => {
+        filteredData[key] = allContacts[key].filter((obj) =>
+          obj.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      });
+      setSearchContacts(filteredData);
+    } else {
+      setSearchContacts(allContacts);
+    }
+  }, [searchTerm]);
 
   useEffect(() => {
     const getContacts = async () => {
@@ -19,6 +36,7 @@ const ContactsList = () => {
 
         console.log(users);
         setAllContacts(users);
+        setSearchContacts(users);
       } catch (error) {
         console.log(error);
       }
@@ -51,24 +69,28 @@ const ContactsList = () => {
                 type="text"
                 placeholder="Search contacts"
                 className="bg-transparent text-sm focus:outline-none text-white w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
         </div>
-        {Object.entries(allContacts).map(([initialLetter, userList]) => {
+        {Object.entries(searchContacts).map(([initialLetter, userList]) => {
           return (
-            <div key={Date.now() + initialLetter}>
-              <div className="text-white pl-10 py-5">{initialLetter}</div>
-              {userList.map((contact) => {
-                return (
-                  <ChatListItem
-                    data={contact}
-                    isContactPage={true}
-                    key={contact.id}
-                  />
-                );
-              })}
-            </div>
+            userList.length > 0 && (
+              <div key={Date.now() + initialLetter}>
+                <div className="text-white pl-10 py-5">{initialLetter}</div>
+                {userList.map((contact) => {
+                  return (
+                    <ChatListItem
+                      data={contact}
+                      isContactPage={true}
+                      key={contact.id}
+                    />
+                  );
+                })}
+              </div>
+            )
           );
         })}
       </div>
